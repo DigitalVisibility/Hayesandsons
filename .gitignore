@@ -45,6 +45,9 @@ yarn-error.log*
 .temp/
 .tmp/
 
+# Astro specific
+.astro/
+
 # Windows image file caches
 Thumbs.db
 

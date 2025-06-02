@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <rect width="60" height="60" fill="#2563eb" rx="8"/>
+  <path d="M12 45V18l18-6 18 6v27M18 24h24M18 30h24M18 36h15" stroke="white" stroke-width="2.5" fill="none"/>
+  <circle cx="30" cy="12" r="2" fill="white"/>
+  <text x="30" y="52" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">H&amp;S</text>
+</svg> 

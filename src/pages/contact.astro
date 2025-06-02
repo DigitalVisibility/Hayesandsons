@@ -1,0 +1,267 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Contact Hayes & Sons Construction Ltd - Free Groundworks Consultation | Midlands Contractors"
+  description="Get in touch with Hayes & Sons Construction Ltd for your free groundworks consultation. Call 07515 364 391 or email james@hayesandsons.co.uk. Serving developers across the Midlands."
+  keywords="contact Hayes and Sons, groundworks quote Midlands, construction consultation Nottinghamshire, foundation contractor Awsworth, James Hayes contact"
+>
+  <!-- Page Header -->
+  <section class="bg-gradient-to-br from-blue-50 to-white py-16">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          Get Your Free Groundworks Consultation
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Ready to start your development? Contact Hayes & Sons Construction Ltd today for a professional consultation and competitive quote.
+        </p>
+      </div>
+      
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        <div class="flex items-center bg-white px-4 py-2 rounded-lg shadow-sm">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          Free Consultation
+        </div>
+        <div class="flex items-center bg-white px-4 py-2 rounded-lg shadow-sm">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          Same Day Response
+        </div>
+        <div class="flex items-center bg-white px-4 py-2 rounded-lg shadow-sm">
+          <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          Competitive Quotes
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Contact Form -->
+        <div class="bg-gray-50 p-8 rounded-lg">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Request Your Free Consultation</h2>
+          <form class="space-y-6" netlify>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                <input type="text" id="firstName" name="firstName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                <input type="text" id="lastName" name="lastName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+            </div>
+            
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+              <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <input type="tel" id="phone" name="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+              <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+              <input type="text" id="company" name="company" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+              <label for="projectType" class="block text-sm font-medium text-gray-700 mb-2">Project Type *</label>
+              <select id="projectType" name="projectType" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Project Type</option>
+                <option value="new-build-foundations">New Build Foundations</option>
+                <option value="earthworks">Earthworks & Excavation</option>
+                <option value="roads-sewers">Roads & Sewers</option>
+                <option value="s278-works">S278 Highway Works</option>
+                <option value="site-preparation">Site Preparation</option>
+                <option value="full-groundworks-package">Full Groundworks Package</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="plotCount" class="block text-sm font-medium text-gray-700 mb-2">Number of Plots (if applicable)</label>
+              <input type="number" id="plotCount" name="plotCount" min="1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+              <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Project Location *</label>
+              <input type="text" id="location" name="location" required placeholder="City, Town or Postcode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+              <label for="timeline" class="block text-sm font-medium text-gray-700 mb-2">Project Timeline</label>
+              <select id="timeline" name="timeline" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Timeline</option>
+                <option value="immediate">Immediate (Within 2 weeks)</option>
+                <option value="1-month">Within 1 month</option>
+                <option value="2-3-months">2-3 months</option>
+                <option value="3-6-months">3-6 months</option>
+                <option value="planning">Still in planning phase</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Project Details *</label>
+              <textarea id="message" name="message" rows="5" required placeholder="Please provide details about your project requirements, size, location, and any specific needs..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input id="consent" name="consent" type="checkbox" required class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="consent" class="text-gray-600">
+                  I consent to Hayes & Sons Construction Ltd contacting me about my enquiry and storing my data in accordance with their <a href="/privacy" class="text-blue-600 hover:underline">Privacy Policy</a>. *
+                </label>
+              </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg">
+              Send My Enquiry
+            </button>
+          </form>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="space-y-8">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
+            <div class="space-y-6">
+              <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Phone</h3>
+                  <p class="text-gray-600">Call for immediate assistance</p>
+                  <a href="tel:07515364391" class="text-blue-600 hover:text-blue-700 font-medium text-lg">07515 364 391</a>
+                </div>
+              </div>
+              
+              <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Email</h3>
+                  <p class="text-gray-600">Send us your enquiry</p>
+                  <a href="mailto:james@hayesandsons.co.uk" class="text-blue-600 hover:text-blue-700 font-medium">james@hayesandsons.co.uk</a>
+                </div>
+              </div>
+              
+              <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Address</h3>
+                  <p class="text-gray-600">Our office location</p>
+                  <address class="text-gray-700 not-italic">
+                    37 Wordsworth Road<br>
+                    Awsworth, Nottinghamshire<br>
+                    NG16 2SW
+                  </address>
+                </div>
+              </div>
+              
+              <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Office Hours</h3>
+                  <p class="text-gray-600">When we're available</p>
+                  <p class="text-gray-700">Monday - Friday: 8:00 AM - 6:00 PM</p>
+                  <p class="text-gray-700">Saturday - Sunday: By appointment</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Service Areas -->
+          <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Service Areas</h3>
+            <p class="text-gray-700 mb-4">
+              We serve developers and contractors throughout the Midlands region, including:
+            </p>
+            <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+              <div>• Nottinghamshire</div>
+              <div>• Derbyshire</div>
+              <div>• Leicestershire</div>
+              <div>• South Yorkshire</div>
+              <div>• West Midlands</div>
+              <div>• East Midlands</div>
+            </div>
+            <p class="text-sm text-gray-600 mt-4">
+              Other areas considered - please enquire for availability.
+            </p>
+          </div>
+          
+          <!-- What Happens Next -->
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">What Happens Next?</h3>
+            <div class="space-y-3">
+              <div class="flex items-start space-x-3">
+                <div class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
+                <div>
+                  <h4 class="font-medium text-gray-900">We Respond Quickly</h4>
+                  <p class="text-sm text-gray-600">We'll respond to your enquiry within business hours, usually the same day.</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
+                <div>
+                  <h4 class="font-medium text-gray-900">Free Consultation</h4>
+                  <p class="text-sm text-gray-600">We'll arrange a free consultation to discuss your project requirements in detail.</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
+                <div>
+                  <h4 class="font-medium text-gray-900">Competitive Quote</h4>
+                  <p class="text-sm text-gray-600">You'll receive a detailed, competitive quote with no hidden costs.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Emergency Contact -->
+  <section class="py-12 bg-blue-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold mb-4">Need Urgent Assistance?</h2>
+      <p class="text-lg mb-6">
+        For urgent groundworks enquiries or project discussions, call us directly.
+      </p>
+      <a href="tel:07515364391" class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold text-lg inline-flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+        </svg>
+        Call 07515 364 391
+      </a>
+    </div>
+  </section>
+</BaseLayout> 

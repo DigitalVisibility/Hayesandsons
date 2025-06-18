@@ -288,8 +288,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           
           // If we're on the Pages domain, use the worker's direct URL
           if (window.location.hostname === 'hayesandsons.pages.dev') {
-            // You'll need to replace this with your actual worker URL after deployment
-            apiEndpoint = 'https://hayes-sons-contact-form.YOUR_SUBDOMAIN.workers.dev/';
+            apiEndpoint = 'https://hayes-sons-contact-form.042d2735a7c78c6e79ea0fa7c14d2370.workers.dev/';
           }
           
           const response = await fetch(apiEndpoint, {

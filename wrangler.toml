@@ -1,0 +1,21 @@
+name = "hayes-sons-contact-form"
+main = "worker.js"
+compatibility_date = "2023-12-01"
+
+[env.production]
+name = "hayes-sons-contact-form"
+
+# Environment variables (set these in Cloudflare dashboard)
+# DKIM_PRIVATE_KEY = "your-dkim-private-key-here"
+
+# Routes for main domain (if you have it configured in Cloudflare)
+[[env.production.routes]]
+pattern = "hayesandsons.co.uk/api/contact"
+zone_name = "hayesandsons.co.uk"
+
+[[env.production.routes]]
+pattern = "www.hayesandsons.co.uk/api/contact"
+zone_name = "hayesandsons.co.uk"
+
+# Note: For Cloudflare Pages (hayesandsons.pages.dev), you'll need to set up
+# a custom domain or use the worker's direct URL as a fallback 

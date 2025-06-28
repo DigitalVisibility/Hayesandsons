@@ -134,3 +134,17 @@ Test the contact form on both domains:
 - CORS is configured to allow requests from your domain
 - Form data is not stored permanently, only used for email sending
 - User consent is verified before processing the form 
+
+## Final Step: Redeploy Your Worker
+
+```bash
+wrangler deploy --env production
+```
+
+## Additional Debugging
+
+Run the following command to get more detailed logs:
+
+```bash
+wrangler tail
+``` 

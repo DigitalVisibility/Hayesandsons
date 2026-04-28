@@ -1,0 +1,433 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+const rawCategories = [...new Set(sortedPosts.map(p => p.data.category).filter(Boolean))];
+const categories = ['All', ...rawCategories];
+
+const baseUrl = 'https://hayesandsons.co.uk';
+const pageUrl = `${baseUrl}/blog`;
+
+const blogSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: 'Groundworks & Construction Blog | Hayes and Sons Construction Ltd',
+      description: 'Expert insights on groundworks, earthworks, roads, sewers and construction from Hayes and Sons Construction Ltd.',
+      inLanguage: 'en-GB',
+      isPartOf: { '@id': `${baseUrl}#website` },
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: pageUrl },
+        ],
+      },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${pageUrl}?search={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'Blog',
+      '@id': `${pageUrl}#blog`,
+      url: pageUrl,
+      name: 'Hayes & Sons Construction Blog',
+      description: 'Expert groundworks and construction insights from Hayes and Sons Construction Ltd, serving the East Midlands.',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Hayes and Sons Construction Ltd',
+        url: baseUrl,
+        logo: { '@type': 'ImageObject', url: `${baseUrl}/logo.webp` },
+        sameAs: ['https://www.facebook.com/share/151i1TJWLFM/'],
+      },
+      blogPost: sortedPosts.slice(0, 15).map(p => ({
+        '@type': 'BlogPosting',
+        headline: p.data.title,
+        url: `${pageUrl}/${p.slug}`,
+        datePublished: new Date(p.data.pubDate).toISOString(),
+        author: { '@type': 'Person', name: p.data.author?.name ?? 'Hayes & Sons' },
+        image: p.data.heroImage?.url ?? undefined,
+      })),
+    },
+    {
+      '@type': 'ItemList',
+      name: 'All Blog Articles',
+      numberOfItems: sortedPosts.length,
+      itemListElement: sortedPosts.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${pageUrl}/${p.slug}`,
+        name: p.data.title,
+      })),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${baseUrl}#website`,
+      url: baseUrl,
+      name: 'Hayes and Sons Construction Ltd',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${pageUrl}?search={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+};
+
+// Serialise for client-side filter (only the fields needed)
+const clientPosts = sortedPosts.map(p => ({
+  slug: p.slug,
+  category: p.data.category ?? 'General',
+  title: p.data.title.toLowerCase(),
+  description: (p.data.description ?? '').toLowerCase(),
+  tags: (p.data.tags ?? []).join(' ').toLowerCase(),
+}));
+---
+
+<BaseLayout
+  title="Groundworks & Construction Blog | Hayes and Sons Construction Ltd"
+  description="Expert insights on groundworks, earthworks, roads, sewers and construction projects from Hayes and Sons Construction Ltd, the East Midlands groundworks specialists."
+  keywords="groundworks blog, construction blog, earthworks, foundations, roads and sewers, Midlands construction, groundworks tips"
+  canonical={pageUrl}
+>
+  <!-- Extra head: preload LCP image if we have posts -->
+  {sortedPosts[0]?.data.heroImage?.url && (
+    <link rel="preload" as="image" href={sortedPosts[0].data.heroImage.url} slot="head" />
+  )}
+  <meta property="og:type" content="website" slot="head" />
+
+  <!-- ══════════════════════════════════════
+       PAGE HERO / SEARCH
+  ══════════════════════════════════════ -->
+  <section class="bg-gradient-to-br from-blue-950 via-blue-800 to-blue-700 text-white py-16 md:py-24 relative overflow-hidden">
+    <!-- Background pattern -->
+    <div class="absolute inset-0 opacity-5" style="background-image: url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\");"></div>
+
+    <div class="container mx-auto px-4 text-center max-w-4xl relative">
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex items-center justify-center gap-2 text-blue-200 text-sm">
+          <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+          <li class="text-blue-400">/</li>
+          <li class="text-white font-medium">Blog</li>
+        </ol>
+      </nav>
+
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+        Construction & Groundworks Insights
+      </h1>
+      <p class="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+        Expert advice, project spotlights, and industry knowledge from the Hayes &amp; Sons team.
+      </p>
+
+      <!-- Search -->
+      <div class="relative max-w-xl mx-auto">
+        <label for="blog-search" class="sr-only">Search blog articles</label>
+        <input
+          type="search"
+          id="blog-search"
+          name="search"
+          placeholder="Search articles..."
+          autocomplete="off"
+          class="w-full px-5 py-4 pl-12 rounded-xl text-gray-900 text-base shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 placeholder-gray-400"
+        />
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+
+      <!-- Stats -->
+      {sortedPosts.length > 0 && (
+        <p class="text-blue-200 text-sm mt-6">{sortedPosts.length} article{sortedPosts.length !== 1 ? 's' : ''} published</p>
+      )}
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       CATEGORY FILTER BAR
+  ══════════════════════════════════════ -->
+  {rawCategories.length > 0 && (
+    <div class="bg-white border-b border-gray-100 shadow-sm sticky top-[73px] z-40">
+      <div class="container mx-auto px-4">
+        <div
+          id="category-filters"
+          role="tablist"
+          aria-label="Filter articles by category"
+          class="flex items-center gap-2 overflow-x-auto py-3"
+          style="scrollbar-width:none;-ms-overflow-style:none;"
+        >
+          {categories.map((cat, i) => (
+            <button
+              data-category={cat}
+              role="tab"
+              aria-selected={i === 0 ? 'true' : 'false'}
+              class={`category-btn flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${i === 0 ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800'}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- ══════════════════════════════════════
+       ARTICLES GRID
+  ══════════════════════════════════════ -->
+  <section class="bg-gray-50 py-12 md:py-16 min-h-[500px]">
+    <div class="container mx-auto px-4">
+
+      <div class="flex items-center justify-between mb-8">
+        <h2 id="section-heading" class="text-2xl md:text-3xl font-bold text-gray-900">All Articles</h2>
+        <span id="results-count" class="text-gray-400 text-sm font-medium">{sortedPosts.length} article{sortedPosts.length !== 1 ? 's' : ''}</span>
+      </div>
+
+      <!-- Empty state -->
+      {sortedPosts.length === 0 && (
+        <div class="text-center py-20">
+          <svg class="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p class="text-gray-500 text-lg font-medium">No articles yet</p>
+          <p class="text-gray-400 text-sm mt-1">Check back soon — we publish regularly.</p>
+        </div>
+      )}
+
+      <!-- No results (search/filter) -->
+      <div id="no-results" class="hidden text-center py-16">
+        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-gray-600 text-lg font-medium">No articles found</p>
+        <p class="text-gray-400 text-sm mt-1">Try a different search term or category.</p>
+        <button id="clear-search" class="mt-4 text-blue-600 hover:text-blue-800 font-medium text-sm underline underline-offset-2 transition-colors">Clear search</button>
+      </div>
+
+      <!-- Cards -->
+      <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {sortedPosts.map((post, index) => {
+          const pubDate = new Date(post.data.pubDate);
+          const dateStr = pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+          const isFirst = index === 0;
+
+          return (
+            <article
+              class="post-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-100 hover:-translate-y-1"
+              data-category={post.data.category ?? 'General'}
+              data-title={post.data.title.toLowerCase()}
+              data-description={(post.data.description ?? '').toLowerCase()}
+              data-tags={(post.data.tags ?? []).join(' ').toLowerCase()}
+              itemscope
+              itemtype="https://schema.org/BlogPosting"
+            >
+              <!-- Hero image -->
+              <a
+                href={`/blog/${post.slug}`}
+                class="block overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-800 to-blue-600 relative"
+                style="aspect-ratio: 16/9;"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                {post.data.heroImage?.url ? (
+                  <img
+                    src={post.data.heroImage.url}
+                    alt={post.data.heroImage.alt ?? post.data.title}
+                    width="600"
+                    height="338"
+                    loading={isFirst ? 'eager' : 'lazy'}
+                    fetchpriority={isFirst ? 'high' : 'auto'}
+                    decoding="async"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    itemprop="image"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-16 h-16 text-blue-300 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                  </div>
+                )}
+              </a>
+
+              <!-- Content -->
+              <div class="p-5 sm:p-6 flex flex-col flex-grow">
+                <!-- Category + date -->
+                <div class="flex items-center gap-2 mb-3 text-sm">
+                  <a
+                    href={`/blog?category=${encodeURIComponent(post.data.category ?? 'General')}`}
+                    class="text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+                    itemprop="articleSection"
+                  >
+                    {post.data.category ?? 'General'}
+                  </a>
+                  <span class="text-gray-200" aria-hidden="true">•</span>
+                  <time
+                    datetime={pubDate.toISOString()}
+                    class="text-gray-400"
+                    itemprop="datePublished"
+                  >
+                    {dateStr}
+                  </time>
+                </div>
+
+                <!-- Title -->
+                <h3 class="font-bold text-gray-900 text-lg leading-snug mb-2 group-hover:text-blue-700 transition-colors" itemprop="headline">
+                  <a href={`/blog/${post.slug}`} class="focus:outline-none focus:underline">
+                    {post.data.title}
+                  </a>
+                </h3>
+
+                <!-- Description -->
+                <p class="text-gray-500 text-sm leading-relaxed flex-grow mb-4 line-clamp-3" itemprop="description">
+                  {post.data.description}
+                </p>
+
+                <!-- Author -->
+                <div class="flex items-center gap-2.5 pt-4 border-t border-gray-100 mt-auto">
+                  <img
+                    src={post.data.author?.image ?? '/logo.webp'}
+                    alt={post.data.author?.name ?? 'Hayes & Sons'}
+                    width="32"
+                    height="32"
+                    loading="lazy"
+                    class="w-8 h-8 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-100"
+                  />
+                  <span class="text-sm font-medium text-gray-700 flex-grow" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <span itemprop="name">{post.data.author?.name ?? 'Hayes & Sons'}</span>
+                  </span>
+                  {post.data.readTime && (
+                    <span class="text-xs text-gray-400 flex-shrink-0">{post.data.readTime}</span>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       CTA BANNER
+  ══════════════════════════════════════ -->
+  <section class="bg-blue-700 text-white py-14">
+    <div class="container mx-auto px-4 text-center max-w-3xl">
+      <h2 class="text-2xl md:text-3xl font-bold mb-4">Looking for Expert Groundworks?</h2>
+      <p class="text-blue-100 text-lg mb-8 max-w-xl mx-auto">
+        Talk to our team about your project. We cover foundations, earthworks, roads and sewers across the East Midlands.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="/contact" class="inline-block bg-white text-blue-700 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold transition-colors shadow-md">
+          Get a Free Quote
+        </a>
+        <a href="/services" class="inline-block border-2 border-white text-white hover:bg-white hover:text-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+          Our Services
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schema -->
+  <Fragment set:html={`<script type="application/ld+json">${JSON.stringify(blogSchema)}</script>`} />
+
+  <!-- Client-side search + filter -->
+  <script is:inline define:vars={{ clientPosts }}>
+    (function () {
+      const searchInput = document.getElementById('blog-search');
+      const categoryBtns = document.querySelectorAll('.category-btn');
+      const postsGrid = document.getElementById('posts-grid');
+      const noResults = document.getElementById('no-results');
+      const resultsCount = document.getElementById('results-count');
+      const sectionHeading = document.getElementById('section-heading');
+      const clearBtn = document.getElementById('clear-search');
+
+      let activeCategory = 'All';
+      let query = '';
+
+      function plural(n) { return n + ' article' + (n !== 1 ? 's' : ''); }
+
+      function refresh() {
+        const cards = postsGrid ? postsGrid.querySelectorAll('.post-card') : [];
+        let shown = 0;
+        cards.forEach(function (card) {
+          const cat = card.dataset.category || '';
+          const catOk = activeCategory === 'All' || cat === activeCategory;
+          const qOk = !query ||
+            (card.dataset.title || '').includes(query) ||
+            (card.dataset.description || '').includes(query) ||
+            (card.dataset.tags || '').includes(query) ||
+            cat.toLowerCase().includes(query);
+          const visible = catOk && qOk;
+          card.style.display = visible ? '' : 'none';
+          if (visible) shown++;
+        });
+
+        if (noResults) noResults.classList.toggle('hidden', shown > 0);
+        if (postsGrid) postsGrid.classList.toggle('hidden', shown === 0);
+        if (resultsCount) resultsCount.textContent = plural(shown);
+        if (sectionHeading) {
+          sectionHeading.textContent =
+            activeCategory !== 'All' ? activeCategory :
+            query ? 'Search Results' : 'All Articles';
+        }
+      }
+
+      categoryBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activeCategory = btn.dataset.category;
+          categoryBtns.forEach(function (b) {
+            b.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+            b.classList.add('bg-gray-100', 'text-gray-600');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+          btn.classList.remove('bg-gray-100', 'text-gray-600');
+          btn.setAttribute('aria-selected', 'true');
+          refresh();
+        });
+      });
+
+      var timer;
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            query = searchInput.value.toLowerCase().trim();
+            refresh();
+          }, 200);
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          if (searchInput) searchInput.value = '';
+          query = '';
+          refresh();
+        });
+      }
+
+      // Handle ?category= and ?search= from URL
+      var params = new URLSearchParams(window.location.search);
+      var urlCat = params.get('category');
+      var urlSearch = params.get('search');
+      if (urlCat) {
+        var matchBtn = Array.from(categoryBtns).find(function (b) { return b.dataset.category === urlCat; });
+        if (matchBtn) matchBtn.click();
+      }
+      if (urlSearch && searchInput) {
+        searchInput.value = urlSearch;
+        query = urlSearch.toLowerCase().trim();
+        refresh();
+      }
+    })();
+  </script>
+</BaseLayout>

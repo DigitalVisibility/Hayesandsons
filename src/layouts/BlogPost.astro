@@ -1,0 +1,377 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  frontmatter: any;
+  headings?: any[];
+  slug: string;
+}
+
+const { frontmatter, headings = [], slug } = Astro.props;
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author,
+  canonical,
+  category,
+  tags = [],
+  keywords = [],
+  heroImage,
+  readTime,
+  og,
+  twitterSite,
+  inLanguage = 'en-GB',
+  enableTOC = true,
+  enableSharing = true,
+  shareButtons = { twitter: true, facebook: true, linkedin: true },
+  testimonial,
+  cta,
+  schema,
+} = frontmatter;
+
+let schemaObject: any;
+try {
+  schemaObject = typeof schema === 'string' ? JSON.parse(schema) : schema ?? {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+  };
+} catch {
+  schemaObject = { '@context': 'https://schema.org', '@type': 'Article', headline: title };
+}
+
+const tocItems = headings
+  .filter((h: any) => h.depth === 2 || h.depth === 3)
+  .map((h: any) => ({ id: h.slug, title: h.text, level: h.depth }));
+
+const publishDate = new Date(pubDate).toLocaleDateString('en-GB', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+
+const baseUrl = 'https://hayesandsons.co.uk';
+const pageUrl = `${baseUrl}/blog/${slug}`;
+const shareUrl = encodeURIComponent(pageUrl);
+const shareText = encodeURIComponent(title);
+
+const articleSchema = schemaObject['@type'] ? schemaObject : {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${pageUrl}#article`,
+      headline: title,
+      description,
+      url: pageUrl,
+      datePublished: new Date(pubDate).toISOString(),
+      dateModified: updatedDate ? new Date(updatedDate).toISOString() : new Date(pubDate).toISOString(),
+      inLanguage,
+      author: {
+        '@type': 'Person',
+        name: author?.name ?? 'Hayes & Sons',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Hayes and Sons Construction Ltd',
+        url: baseUrl,
+        logo: { '@type': 'ImageObject', url: `${baseUrl}/logo.webp` },
+      },
+      image: heroImage?.url ? { '@type': 'ImageObject', url: heroImage.url } : undefined,
+      keywords: keywords.join(', '),
+      articleSection: category,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${baseUrl}/blog` },
+        { '@type': 'ListItem', position: 3, name: title, item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} | Hayes and Sons Construction Blog`}
+  description={description}
+  keywords={keywords.join(', ')}
+  canonical={canonical ?? pageUrl}
+  ogImage={og?.image ?? heroImage?.url}
+  ogType="article"
+>
+  <meta name="article:published_time" content={new Date(pubDate).toISOString()} slot="head" />
+  {updatedDate && <meta name="article:modified_time" content={new Date(updatedDate).toISOString()} slot="head" />}
+  {category && <meta name="article:section" content={category} slot="head" />}
+  {tags.map((tag: string) => <meta name="article:tag" content={tag} slot="head" />)}
+  <meta name="twitter:card" content="summary_large_image" slot="head" />
+  <meta name="twitter:site" content={twitterSite ?? '@hayesandsons'} slot="head" />
+  <meta name="twitter:title" content={title} slot="head" />
+  <meta name="twitter:description" content={description} slot="head" />
+  {heroImage?.url && <meta name="twitter:image" content={heroImage.url} slot="head" />}
+
+  <article itemscope itemtype="https://schema.org/Article">
+
+    <!-- Hero -->
+    <div class="relative w-full overflow-hidden bg-gradient-to-br from-blue-900 to-blue-700" style="height: clamp(280px, 40vw, 480px);">
+      {heroImage?.url ? (
+        <img
+          src={heroImage.url}
+          alt={heroImage.alt ?? title}
+          width="1200"
+          height="630"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="w-full h-full object-cover"
+          itemprop="image"
+        />
+      ) : null}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
+        <div class="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+          <div class="text-white max-w-3xl">
+            <nav class="text-blue-200 text-sm mb-4" aria-label="Breadcrumb">
+              <ol class="flex items-center gap-2 flex-wrap">
+                <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+                <li class="text-blue-400">/</li>
+                <li><a href="/blog" class="hover:text-white transition-colors">Blog</a></li>
+                <li class="text-blue-400">/</li>
+                <li class="text-blue-100 line-clamp-1">{title}</li>
+              </ol>
+            </nav>
+            {category && (
+              <span class="inline-block bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
+                {category}
+              </span>
+            )}
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight" itemprop="headline">{title}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta bar -->
+    <div class="bg-white border-b border-gray-100 shadow-sm">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-5 text-sm text-gray-500">
+          <time datetime={new Date(pubDate).toISOString()} itemprop="datePublished" class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            {publishDate}
+          </time>
+          {readTime && (
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              {readTime}
+            </span>
+          )}
+        </div>
+
+        {enableSharing && (
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500">Share:</span>
+            {shareButtons.twitter && (
+              <a href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter" class="text-gray-400 hover:text-blue-500 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.059 10.059 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.548l-.047-.02z"/></svg>
+              </a>
+            )}
+            {shareButtons.linkedin && (
+              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" class="text-gray-400 hover:text-blue-700 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+            )}
+            {shareButtons.facebook && (
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="bg-gray-50 py-10">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+          <!-- Main content -->
+          <div class="lg:col-span-8 order-2 lg:order-1">
+            <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-10 prose prose-lg max-w-none
+              prose-headings:font-bold prose-headings:text-gray-900
+              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+              prose-p:text-gray-700 prose-p:leading-relaxed
+              prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+              prose-strong:text-gray-900
+              prose-ul:my-4 prose-li:text-gray-700
+              prose-img:rounded-xl prose-img:shadow-md
+              prose-blockquote:border-blue-500 prose-blockquote:text-gray-600
+              prose-code:text-blue-700 prose-code:bg-blue-50 prose-code:px-1 prose-code:rounded"
+              itemprop="articleBody"
+            >
+              <slot />
+            </div>
+
+            <!-- Tags -->
+            {tags.length > 0 && (
+              <div class="mt-6 flex flex-wrap gap-2">
+                {tags.map((tag: string) => (
+                  <span class="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full border border-gray-200">#{tag}</span>
+                ))}
+              </div>
+            )}
+
+            <!-- Bottom share -->
+            {enableSharing && (
+              <div class="mt-10 p-6 bg-white rounded-2xl shadow-sm text-center border border-gray-100">
+                <p class="text-gray-700 font-medium mb-4">Found this useful? Share it with your network.</p>
+                <div class="flex justify-center gap-4">
+                  {shareButtons.twitter && (
+                    <a href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 bg-sky-50 text-sky-600 hover:bg-sky-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.059 10.059 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.548l-.047-.02z"/></svg>
+                      Twitter
+                    </a>
+                  )}
+                  {shareButtons.linkedin && (
+                    <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                      LinkedIn
+                    </a>
+                  )}
+                  {shareButtons.facebook && (
+                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                      Facebook
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <!-- Author -->
+            <div class="mt-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-start gap-5" itemprop="author" itemscope itemtype="https://schema.org/Person">
+              <img
+                src={author?.image ?? '/logo.webp'}
+                alt={author?.name ?? 'Hayes & Sons'}
+                width="72"
+                height="72"
+                loading="lazy"
+                class="w-16 h-16 rounded-full object-cover flex-shrink-0 ring-2 ring-blue-100"
+                itemprop="image"
+              />
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">Written by</p>
+                <h3 class="text-lg font-bold text-gray-900" itemprop="name">{author?.name ?? 'Hayes & Sons'}</h3>
+                <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+                  {author?.bio ?? 'The Hayes & Sons Construction team brings decades of combined experience in groundworks, earthworks, foundations, roads and sewers across the East Midlands.'}
+                </p>
+                <a href={author?.url ?? '/about'} class="inline-block mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">View profile →</a>
+              </div>
+            </div>
+
+            <!-- CTA contact -->
+            <div class="mt-8 p-8 bg-blue-50 rounded-2xl border border-blue-100 text-center">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Have a question about this topic?</h3>
+              <p class="text-gray-600 mb-5">Our experienced groundworks team are happy to help. Get in touch for expert advice or a free quote.</p>
+              <a href="/contact" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors shadow-md">Contact Us</a>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="lg:col-span-4 order-1 lg:order-2 hidden lg:block">
+            <div class="sticky top-24 space-y-6">
+
+              {category && (
+                <div>
+                  <a href={`/blog?category=${encodeURIComponent(category)}`} class="inline-block bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-blue-200 transition-colors">{category}</a>
+                </div>
+              )}
+
+              {enableTOC && tocItems.length > 0 && (
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                  <button class="toc-header w-full text-left font-bold text-gray-900 text-base flex items-center justify-between group">
+                    Table of Contents
+                    <span class="toc-icon text-gray-400 group-hover:text-blue-600 transition-colors text-xs">▼</span>
+                  </button>
+                  <nav class="toc-content mt-4 space-y-1" style="display:none;">
+                    {tocItems.map((item: any) => (
+                      <a
+                        href={`#${item.id}`}
+                        class={`block text-sm text-gray-600 hover:text-blue-600 py-1 transition-colors leading-snug ${item.level === 3 ? 'pl-4 text-xs' : ''}`}
+                      >
+                        {item.title}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              )}
+
+              {testimonial && (
+                <div class="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-6">
+                  <div class="text-4xl text-blue-400 font-serif leading-none mb-2">"</div>
+                  <p class="text-gray-700 italic text-sm mb-4">{testimonial.quote}</p>
+                  <div class="font-bold text-gray-900 text-sm">{testimonial.author}</div>
+                  {testimonial.role && <div class="text-xs text-gray-500">{testimonial.role}{testimonial.company ? `, ${testimonial.company}` : ''}</div>}
+                  <div class="flex text-yellow-400 text-sm mt-2">{'★'.repeat(testimonial.rating ?? 5)}</div>
+                </div>
+              )}
+
+              {cta?.enable && (
+                <div class="bg-blue-600 text-white rounded-xl p-6">
+                  <h3 class="font-bold text-lg mb-2">{cta.title}</h3>
+                  <p class="text-blue-100 text-sm mb-4">{cta.description}</p>
+                  <a href={cta.buttonUrl} class="block bg-white text-blue-700 hover:bg-blue-50 text-center font-semibold px-4 py-2 rounded-lg transition-colors text-sm">{cta.buttonText}</a>
+                </div>
+              )}
+
+              <!-- Default CTA if no custom one -->
+              {!cta?.enable && (
+                <div class="bg-gray-900 text-white rounded-xl p-6">
+                  <h3 class="font-bold text-base mb-2">Need a Quote?</h3>
+                  <p class="text-gray-300 text-sm mb-4">Get expert groundworks advice and a free no-obligation quote from our team.</p>
+                  <a href="/contact" class="block bg-blue-500 hover:bg-blue-400 text-center font-semibold px-4 py-2 rounded-lg transition-colors text-sm">Get a Free Quote</a>
+                </div>
+              )}
+
+              <!-- More articles link -->
+              <a href="/blog" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                Back to all articles
+              </a>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Newsletter CTA -->
+  <section class="py-12 bg-gradient-to-r from-blue-800 to-blue-600 text-white">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold mb-3">Stay Ahead in Construction</h2>
+      <p class="text-blue-100 mb-6">Get the latest groundworks insights, project news, and construction tips delivered to your inbox.</p>
+      <a href="/contact" class="inline-block bg-white text-blue-800 hover:bg-blue-50 font-semibold px-8 py-3 rounded-lg transition-colors shadow-md">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- Article Schema -->
+  <Fragment set:html={`<script type="application/ld+json">${JSON.stringify(articleSchema)}</script>`} />
+
+  <script is:inline>
+    (function () {
+      const tocHeader = document.querySelector('.toc-header');
+      const tocContent = document.querySelector('.toc-content');
+      const tocIcon = document.querySelector('.toc-icon');
+      if (tocHeader && tocContent) {
+        tocHeader.addEventListener('click', () => {
+          const open = tocContent.style.display !== 'none';
+          tocContent.style.display = open ? 'none' : 'block';
+          if (tocIcon) tocIcon.textContent = open ? '▼' : '▲';
+        });
+      }
+    })();
+  </script>
+</BaseLayout>
